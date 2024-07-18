@@ -7,7 +7,7 @@ env:
 phases:
   install:
     runtime-versions:
-      golang: 1.x # 自動で最新バージョンを使用します
+      golang: 1.x
     commands:
       - echo "Installing dependencies..."
       - go mod tidy
@@ -15,6 +15,7 @@ phases:
     commands:
       - echo "Building the Go app..."
       - GOOS=linux GOARCH=amd64 go build -o bootstrap cmd/todoapp/main.go
+      - chmod +x bootstrap
   post_build:
     commands:
       - echo "Zipping the application..."
