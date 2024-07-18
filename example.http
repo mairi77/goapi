@@ -1,0 +1,39 @@
+GET http://localhost:8080/todo
+Content-Type: application/json
+
+
+###
+POST http://localhost:8080/todo
+Content-Type: application/json
+
+{
+  "title": "Buy Orange3",
+  "description": "Go to the store and buy some Orange"
+}
+
+###
+GET http://localhost:8080/todo/9a709930-d355-4b90-80b1-313d1c9ad858
+Content-Type: application/json
+
+###
+PUT http://localhost:8080/todo/53e264f4-06d6-418f-a7db-c7be32ea3585
+Content-Type: application/json
+
+{
+  "title": "Buy Apple 2",
+  "description": "Go to the store and buy some Apple 2",
+}
+
+###
+DELETE http://localhost:8080/todo/53e264f4-06d6-418f-a7db-c7be32ea3585
+Content-Type: application/json
+```
+
+###
+PUT http://localhost:8080/todo/53e264f4-06d6-418f-a7db-c7be32ea3585/finish
+Content-Type: application/json
+
+###
+GET http://localhost:8080/todo/search?q=test
+Content-Type: application/json
+

@@ -1,0 +1,30 @@
+version: 0.2
+ 
+env:
+  variables:
+    GO111MODULE: "on"
+ 
+phases:
+  install:
+    runtime-versions:
+      golang: 1.x # 自動で最新バージョンを使用します
+    commands:
+      - echo "Installing dependencies..."
+      - go mod tidy
+  build:
+    commands:
+      - echo "Building the Go app..."
+      - GOOS=linux GOARCH=amd64 go build -o bootstrap cmd/todoapp/main.go
+  post_build:
+    commands:
+      - echo "Zipping the application..."
+      - zip deploy.zip bootstrap
+      - echo "Build completed on $(date)"
+ 
+artifacts:
+  files:
+    - deploy.zip
+ 
+cache:
+  paths:
+    - /root/.cache/go-build
