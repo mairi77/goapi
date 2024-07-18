@@ -14,7 +14,7 @@ phases:
   build:
     commands:
       - echo "Building the Go app..."
-      - GOOS=linux GOARCH=amd64 go build -o bootstrap cmd/todoapp/main.go
+      - GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o bootstrap cmd/todoapp/main.go
       - chmod +x bootstrap
   post_build:
     commands:
