@@ -1,21 +1,21 @@
 package main
 
 import (
-	"context"
 	"os"
 	"todoapp/internal/controller"
 	"todoapp/internal/repository"
 
 	"github.com/akrylysov/algnhsa" // GinフレームワークとLambdaを統合
-	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/gin-gonic/gin"
 )
 
 func createRouter() *gin.Engine {
 	repository.InitDB()
 
+	// Ginのデフォルト設定を使用
 	router := gin.Default()
 
+	// ルートの定義
 	router.GET("/todo", controller.GetTodos)
 	router.POST("/todo", controller.CreateTodo)
 	router.PUT("/todo/:id", controller.UpdateTodo)
@@ -27,17 +27,15 @@ func createRouter() *gin.Engine {
 	return router
 }
 
-func lambdaHandler(ctx context.Context) (interface{}, error) {
-	router := createRouter()
-	algnhsa.ListenAndServe(router, nil)
-	return nil, nil
-}
-
 func main() {
+	// コマンドライン引数に "lambda" が含まれていれば、Lambdaで実行されていると判断
 	if len(os.Args) > 1 && os.Args[1] == "lambda" {
-		lambda.Start(lambdaHandler)
+		router := createRouter()
+		algnhsa.ListenAndServe(router, &algnhsa.Options{
+			UseProxyPath: true,
+		})
 	} else {
 		router := createRouter()
-		router.Run(":8080")
+		router.Run(":8080") // ローカル環境で実行される場合
 	}
 }
