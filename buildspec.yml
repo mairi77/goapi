@@ -3,29 +3,31 @@ version: 0.2
 env:
   variables:
     GO111MODULE: "on"
- 
+    CGO_ENABLED: "1"  # CGOを有効にする環境変数
+
 phases:
   install:
     runtime-versions:
-      golang: 1.x
+      golang: 1.x # 自動で最新バージョンを使用します
     commands:
       - echo "Installing dependencies..."
+      - yum groupinstall -y "Development Tools" # Development Toolsグループをインストール
+      - yum install -y gcc  # 必要に応じて追加のパッケージをインストール
       - go mod tidy
   build:
     commands:
       - echo "Building the Go app..."
-      - GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o bootstrap cmd/todoapp/main.go
-      - chmod +x bootstrap
+      - GOOS=linux GOARCH=amd64 go build -o bootstrap cmd/todoapp/main.go
   post_build:
     commands:
       - echo "Zipping the application..."
       - zip deploy.zip bootstrap
       - echo "Build completed on $(date)"
- 
+
 artifacts:
   files:
     - deploy.zip
- 
+
 cache:
   paths:
     - /root/.cache/go-build
