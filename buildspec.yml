@@ -1,5 +1,5 @@
 version: 0.2
- 
+
 env:
   variables:
     GO111MODULE: "on"
@@ -11,8 +11,8 @@ phases:
       golang: 1.x # 自動で最新バージョンを使用します
     commands:
       - echo "Installing dependencies..."
-      - yum groupinstall -y "Development Tools" # Development Toolsグループをインストール
-      - yum install -y gcc  # 必要に応じて追加のパッケージをインストール
+      - apt-get update
+      - apt-get install -y build-essential gcc  # 必要なパッケージをインストール
       - go mod tidy
   build:
     commands:
