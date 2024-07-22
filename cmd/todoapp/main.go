@@ -84,16 +84,19 @@ func createRouter() *gin.Engine {
 func main() {
 	log.Println("Starting application...")
 
-	if os.Getenv("AWS_LAMBDA_FUNCTION_NAME") != "" {
-		router := createRouter()
+	lambdaFunctionName := os.Getenv("AWS_LAMBDA_FUNCTION_NAME")
+	if lambdaFunctionName != "" {
 		log.Println("Running in lambda mode.")
+		log.Printf("Lambda function name: %s", lambdaFunctionName)
+
+		router := createRouter()
 
 		algnhsa.ListenAndServe(router, &algnhsa.Options{
 			UseProxyPath: true,
 		})
 	} else {
-		router := createRouter()
 		log.Println("Running in local mode.")
+		router := createRouter()
 		if err := router.Run(":8080"); err != nil {
 			log.Fatalf("Failed to run server: %v", err)
 		}
