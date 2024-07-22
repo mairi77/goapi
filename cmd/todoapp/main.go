@@ -84,12 +84,16 @@ func createRouter() *gin.Engine {
 func main() {
 	log.Println("Starting application...")
 
-	lambdaFunctionName := os.Getenv("AWS_LAMBDA_FUNCTION_NAME")
-	if lambdaFunctionName != "" {
-		log.Println("Running in lambda mode.")
-		log.Printf("Lambda function name: %s", lambdaFunctionName)
-
+	if os.Getenv("AWS_LAMBDA_FUNCTION_NAME") != "" {
 		router := createRouter()
+		log.Println("Running in lambda mode.")
+		log.Printf("Lambda function name: %s", os.Getenv("AWS_LAMBDA_FUNCTION_NAME"))
+
+		// 詳細なログ出力のためのカスタムミドルウェア
+		router.Use(func(c *gin.Context) {
+			log.Printf("Request event: Method=%s, URL=%s\n", c.Request.Method, c.Request.URL.String())
+			c.Next()
+		})
 
 		algnhsa.ListenAndServe(router, &algnhsa.Options{
 			UseProxyPath: true,
