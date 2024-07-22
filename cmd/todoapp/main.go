@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt" // 追加
+	"fmt"
 	"log"
 	"os"
-	"time" // 追加
+	"time"
 	"todoapp/internal/controller"
 	"todoapp/internal/repository"
 
@@ -17,9 +17,8 @@ func createRouter() *gin.Engine {
 	repository.InitDB()
 	log.Println("Database Initialized.")
 
-	router := gin.New() // Newを使い、カスタムミドルウェアを追加
+	router := gin.New()
 	router.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
-		// ログのフォーマットを指定
 		return fmt.Sprintf("[GIN] %s - [%s] \"%s %s %s %d %s \"%s\" %s\"\n",
 			param.TimeStamp.Format(time.RFC1123),
 			param.ClientIP,
@@ -36,10 +35,19 @@ func createRouter() *gin.Engine {
 
 	log.Println("Registering routes...")
 	router.GET("/", func(c *gin.Context) {
+		log.Println("GET / endpoint hit!")
 		c.JSON(200, gin.H{
 			"message": "Welcome to the Todo App API!",
 		})
 	})
+
+	router.GET("/ping", func(c *gin.Context) {
+		log.Println("GET /ping endpoint hit!")
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
+
 	router.GET("/todo", func(c *gin.Context) {
 		log.Println("GET /todo endpoint hit!")
 		controller.GetTodos(c)
