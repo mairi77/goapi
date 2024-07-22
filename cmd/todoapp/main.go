@@ -1,9 +1,10 @@
 package main
 
 import (
+	"fmt" // 追加
 	"log"
 	"os"
-	"time"
+	"time" // 追加
 	"todoapp/internal/controller"
 	"todoapp/internal/repository"
 
@@ -16,10 +17,10 @@ func createRouter() *gin.Engine {
 	repository.InitDB()
 	log.Println("Database Initialized.")
 
-	router := gin.New()
+	router := gin.New() // Newを使い、カスタムミドルウェアを追加
 	router.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
 		// ログのフォーマットを指定
-		return fmt.Sprintf("[GIN] %s %s \"%s %s %s %d %s \"%s\" %s\"\n",
+		return fmt.Sprintf("[GIN] %s - [%s] \"%s %s %s %d %s \"%s\" %s\"\n",
 			param.TimeStamp.Format(time.RFC1123),
 			param.ClientIP,
 			param.Method,
@@ -82,7 +83,6 @@ func main() {
 		algnhsa.ListenAndServe(router, &algnhsa.Options{
 			UseProxyPath: true,
 		})
-
 	} else {
 		router := createRouter()
 		log.Println("Running in local mode.")
