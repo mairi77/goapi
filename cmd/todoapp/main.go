@@ -14,11 +14,13 @@ import (
 
 func createRouter() *gin.Engine {
 	log.Println("Initializing Database...")
+	// Uncomment this line for actual database initialization
 	repository.InitDB()
 	log.Println("Database Initialized.")
 
 	router := gin.New()
 	router.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
+		// ログのフォーマットを定義
 		return fmt.Sprintf("[GIN] %s - [%s] \"%s %s %s %d %s \"%s\" %s\"\n",
 			param.TimeStamp.Format(time.RFC1123),
 			param.ClientIP,
@@ -36,16 +38,12 @@ func createRouter() *gin.Engine {
 	log.Println("Registering routes...")
 	router.GET("/", func(c *gin.Context) {
 		log.Println("GET / endpoint hit!")
-		c.JSON(200, gin.H{
-			"message": "Welcome to the Todo App API!",
-		})
+		c.JSON(200, gin.H{"message": "Welcome to the Todo App API!"})
 	})
 
 	router.GET("/ping", func(c *gin.Context) {
 		log.Println("GET /ping endpoint hit!")
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
+		c.JSON(200, gin.H{"message": "pong"})
 	})
 
 	router.GET("/todo", func(c *gin.Context) {
@@ -77,24 +75,25 @@ func createRouter() *gin.Engine {
 		controller.SearchTodos(c)
 	})
 	log.Println("Routes registered.")
-
 	return router
 }
 
 func main() {
 	log.Println("Starting application...")
 
-	if os.Getenv("AWS_LAMBDA_FUNCTION_NAME") != "" {
-		router := createRouter()
+	isLambda := os.Getenv("AWS_LAMBDA_FUNCTION_NAME") != ""
+	if isLambda {
 		log.Println("Running in lambda mode.")
-		log.Printf("Lambda function name: %s", os.Getenv("AWS_LAMBDA_FUNCTION_NAME"))
 
-		// 詳細なログ出力のためのカスタムミドルウェア
+		router := createRouter()
+
+		// 詳細なリクエストログ出力
 		router.Use(func(c *gin.Context) {
-			log.Printf("Request event: Method=%s, URL=%s\n", c.Request.Method, c.Request.URL.String())
+			log.Printf("Request: Method=%s, URL=%s, Path=%s, RawPath=%s, RawQuery=%s", c.Request.Method, c.Request.URL.String(), c.Request.URL.Path, c.Request.URL.RawPath, c.Request.URL.RawQuery)
 			c.Next()
 		})
 
+		// Lambda上のHTTPサーバー起動
 		algnhsa.ListenAndServe(router, &algnhsa.Options{
 			UseProxyPath: true,
 		})
